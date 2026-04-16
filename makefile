@@ -4,11 +4,11 @@ export CFLAGS=-Wall
 # export CFLAGS=-Wall -g -Og #for debug build.
 # export CFLAGS=-Wall -O3 -finline-functions #for release build.
 
-all: dist/include/simple-xcypher/simple-xcypher.h dist/lib/libsimplexcypher.a dist/lib/libsimplexcypher.so bin/simple-xcypher
+all: dist/include/simple-xcipher/simple-xcipher.h dist/lib/libsimplexcipher.a dist/lib/libsimplexcipher.so bin/simple-xcipher
 
 .PHONY: clean
 clean:
-	rm -f src/simple-xcypher.o
+	rm -f src/simple-xcipher.o
 	rm -f src/main.o
 	make -C test clean
 
@@ -20,23 +20,23 @@ test: all
 test-bin: all
 	make -C test test-bin SIMPLE_XCYPHER_BIN=$(CURDIR)/bin
 
-src/simple-xcypher.o: src/simple-xcypher.c src/simple-xcypher.h
-	$(GCC) $(CFLAGS) -c -o src/simple-xcypher.o src/simple-xcypher.c
+src/simple-xcipher.o: src/simple-xcipher.c src/simple-xcipher.h
+	$(GCC) $(CFLAGS) -c -o src/simple-xcipher.o src/simple-xcipher.c
 
-dist/include/simple-xcypher:
-	mkdir -p dist/include/simple-xcypher
+dist/include/simple-xcipher:
+	mkdir -p dist/include/simple-xcipher
 
-dist/include/simple-xcypher/simple-xcypher.h: src/simple-xcypher.h | dist/include/simple-xcypher
-	cp src/simple-xcypher.h dist/include/simple-xcypher/simple-xcypher.h
+dist/include/simple-xcipher/simple-xcipher.h: src/simple-xcipher.h | dist/include/simple-xcipher
+	cp src/simple-xcipher.h dist/include/simple-xcipher/simple-xcipher.h
 
 dist/lib:
 	mkdir -p dist/lib
 
-dist/lib/libsimplexcypher.a: src/simple-xcypher.o | dist/lib
-	ar r dist/lib/libsimplexcypher.a src/simple-xcypher.o
+dist/lib/libsimplexcipher.a: src/simple-xcipher.o | dist/lib
+	ar r dist/lib/libsimplexcipher.a src/simple-xcipher.o
 
-dist/lib/libsimplexcypher.so: src/simple-xcypher.o | dist/lib
-	$(GCC) $(CFLAGS) -shared -o dist/lib/libsimplexcypher.so src/simple-xcypher.o
+dist/lib/libsimplexcipher.so: src/simple-xcipher.o | dist/lib
+	$(GCC) $(CFLAGS) -shared -o dist/lib/libsimplexcipher.so src/simple-xcipher.o
 
 bin:
 	mkdir -p bin
@@ -44,5 +44,5 @@ bin:
 src/main.o: src/main.c src/buffer.h dist/include
 	$(GCC) $(CFLAGS) -Idist/include -c -o src/main.o src/main.c
 
-bin/simple-xcypher: src/main.o dist/lib/libsimplexcypher.a | bin
-	$(GCC) $(CFLAGS) -Ldist/lib -o bin/simple-xcypher src/main.o -lsimplexcypher
+bin/simple-xcipher: src/main.o dist/lib/libsimplexcipher.a | bin
+	$(GCC) $(CFLAGS) -Ldist/lib -o bin/simple-xcipher src/main.o -lsimplexcipher

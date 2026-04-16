@@ -7,13 +7,12 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include <threads.h>
 
 /**
  * @brief 各種暗号関数で利用される鍵整数を保存するための型です。
  */
 
-typedef size_t simple_xcypher_key;
+typedef size_t simple_xcipher_key;
 
 /**
  * @brief 各種暗号関数が失敗した際に設定される値が定義された列挙型です。
@@ -21,26 +20,26 @@ typedef size_t simple_xcypher_key;
  * @param SIMPLE_XCYPHER_ERRNO_INDEX_OUT_OF_RANGE データの読み出し位置が、データの末尾を超過した。
  */
 
-typedef enum _simple_xcypher_errno {
+typedef enum _simple_xcipher_errno {
   SIMPLE_XCYPHER_ERRNO_NONE = 0,
   SIMPLE_XCYPHER_ERRNO_INDEX_OUT_OF_RANGE
-} _simple_xcypher_errno;
+} _simple_xcipher_errno;
 
 /**
  * @brief 各種暗号関数が失敗した際に設定される値が格納される大域変数です。
  * @note この大域変数は errno と同様にスレッドローカルに保存されます。
  */
 
-extern thread_local _simple_xcypher_errno simple_xcypher_errno;
+extern __thread _simple_xcipher_errno simple_xcipher_errno;
 
 /**
- * @brief simple_xcypher_errno の値をメッセージ表示に適した文字列に変換します。
- * @param err simple_xcypher_errno に設定された値です。
+ * @brief simple_xcipher_errno の値をメッセージ表示に適した文字列に変換します。
+ * @param err simple_xcipher_errno に設定された値です。
  * @return err の内容にあった静的な文字列を返します。
  * @note 未定義の値が err に指定された場合、この関数は `"Undefined errno."` を返します。
  */
 
-extern char __stdcall *simple_xcypher_errno_message (_simple_xcypher_errno err);
+extern char __stdcall *simple_xcipher_errno_message (_simple_xcipher_errno err);
 
 /**
  * @brief 暗号化されたデータを保存する領域の大きさを求めます。
@@ -51,7 +50,7 @@ extern char __stdcall *simple_xcypher_errno_message (_simple_xcypher_errno err);
  * @warning datasize の値が `SIZE_MAX >> 1` 以内でなければ、この関数は失敗します。
  */
 
-extern int __stdcall simple_xcypher_calc_encrypted_data_size (size_t datasize, size_t *encrypteddatasizep);
+extern int __stdcall simple_xcipher_calc_encrypted_data_size (size_t datasize, size_t *encrypteddatasizep);
 
 /**
  * @brief 鍵を用いてデータを暗号化します。
@@ -61,10 +60,10 @@ extern int __stdcall simple_xcypher_calc_encrypted_data_size (size_t datasize, s
  * @param encrypteddata 暗号化されたデータが書き込まれる領域のポインタです。
  * @param encrypteddatasize 暗号化されたデータが書き込まれる領域の大きさです。
  * @return この関数は必ず成功します。
- * @note encrypteddata, encrypteddatasize はそれぞれ simple_xcypher_calc_encrypted_data_size() 関数で計算された大きさ、値を指定することを強く推奨します。
+ * @note encrypteddata, encrypteddatasize はそれぞれ simple_xcipher_calc_encrypted_data_size() 関数で計算された大きさ、値を指定することを強く推奨します。
  */
 
-extern void __stdcall simple_xcypher_encrypt (const void *data, size_t datasize, simple_xcypher_key key, void *encrypteddata, size_t encrypteddatasize);
+extern void __stdcall simple_xcipher_encrypt (const void *data, size_t datasize, simple_xcipher_key key, void *encrypteddata, size_t encrypteddatasize);
 
 /**
  * @brief 鍵を用いてデータを部分的に復号します。
@@ -79,4 +78,4 @@ extern void __stdcall simple_xcypher_encrypt (const void *data, size_t datasize,
  * @warning position, size の合計が datasize を超過する場合、メモリを保護するために、この関数は失敗します。
  */
 
-extern int __stdcall simple_xcypher_decrypt (size_t position, size_t size, const void *data, size_t datasize, simple_xcypher_key key, void *decrypteddata);
+extern int __stdcall simple_xcipher_decrypt (size_t position, size_t size, const void *data, size_t datasize, simple_xcipher_key key, void *decrypteddata);

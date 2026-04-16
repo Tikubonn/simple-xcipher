@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <simple-xcypher/simple-xcypher.h>
+#include <simple-xcipher/simple-xcipher.h>
 #include "buffer.h"
 
 typedef enum mode {
@@ -78,7 +78,7 @@ static int parse_uint (char *str, uintmax_t *valuep){
   }
 }
 
-static int parse_args (int argc, char **argv, mode *modep, FILE **inputp, FILE **outputp, size_t *positionp, size_t *sizep, bool *givensizep, simple_xcypher_key *keyp, bool *showhelpp, bool *showversionp){
+static int parse_args (int argc, char **argv, mode *modep, FILE **inputp, FILE **outputp, size_t *positionp, size_t *sizep, bool *givensizep, simple_xcipher_key *keyp, bool *showhelpp, bool *showversionp){
   mode mode = MODE_ENCRYPTION;
   char *inputfile = NULL;
   char *outputfile = NULL;
@@ -308,14 +308,14 @@ static void *read_all_input (FILE *input, size_t *writtensizep){
   return bufferdata;
 }
 
-static int encrypt (simple_xcypher_key key, FILE *input, FILE *output){
+static int encrypt (simple_xcipher_key key, FILE *input, FILE *output){
   size_t datasize;
   void *data = read_all_input(input, &datasize);
   if (data == NULL){
     return 1;
   }
   size_t encrypteddatasize;
-  if (simple_xcypher_calc_encrypted_data_size(datasize, &encrypteddatasize)){
+  if (simple_xcipher_calc_encrypted_data_size(datasize, &encrypteddatasize)){
     fprintf(stderr, "Plain text is too much large (size = %zu).\n", datasize);
     return 1;
   }
@@ -324,7 +324,7 @@ static int encrypt (simple_xcypher_key key, FILE *input, FILE *output){
     fprintf(stderr, "Could not allocate memory (size = %zu, errno = %d).\n", encrypteddatasize, errno);
     return 1;
   }
-  simple_xcypher_encrypt(data, datasize, key, encrypteddata, encrypteddatasize);
+  simple_xcipher_encrypt(data, datasize, key, encrypteddata, encrypteddatasize);
   size_t writtensize = fwrite(encrypteddata, 1, encrypteddatasize, output);
   if (writtensize < encrypteddatasize){
     fprintf(stderr, "Caused some error at writing into a file (errno = %d).\n", errno);
@@ -333,7 +333,7 @@ static int encrypt (simple_xcypher_key key, FILE *input, FILE *output){
   return 0;
 }
 
-static int decrypt (size_t position, size_t size, bool givensize, simple_xcypher_key key, FILE *input, FILE *output){
+static int decrypt (size_t position, size_t size, bool givensize, simple_xcipher_key key, FILE *input, FILE *output){
   size_t datasize;
   void *data = read_all_input(input, &datasize);
   if (data == NULL){
@@ -345,9 +345,9 @@ static int decrypt (size_t position, size_t size, bool givensize, simple_xcypher
     fprintf(stderr, "Could not allocate memory (size = %zu).\n", decrypteddatasize);
     return 1;
   }
-  if (simple_xcypher_decrypt(position, decrypteddatasize, data, datasize, key, decrypteddata)){
-    char *message = simple_xcypher_errno_message(simple_xcypher_errno);
-    fprintf(stderr, "Could not decrypt (simple_xcypher_errno = %d, %s).\n", simple_xcypher_errno, message);
+  if (simple_xcipher_decrypt(position, decrypteddatasize, data, datasize, key, decrypteddata)){
+    char *message = simple_xcipher_errno_message(simple_xcipher_errno);
+    fprintf(stderr, "Could not decrypt (simple_xcipher_errno = %d, %s).\n", simple_xcipher_errno, message);
     return 1;
   }
   size_t writtensize = fwrite(decrypteddata, 1, decrypteddatasize, output);
@@ -359,8 +359,8 @@ static int decrypt (size_t position, size_t size, bool givensize, simple_xcypher
 }
 
 const char HELP_MESSAGE[] = 
-"Usage: simple-xcypher [OPTION]... -k KEY [FILE]\n"
-"Encrypt or decrypt FILE with simple-xcypher.\n"
+"Usage: simple-xcipher [OPTION]... -k KEY [FILE]\n"
+"Encrypt or decrypt FILE with simple-xcipher.\n"
 "\n"
 "OPTION:\n"
 "  -o file: An output file. default is stdout.\n"
@@ -373,7 +373,7 @@ const char HELP_MESSAGE[] =
 ;
 
 const char VERSION_MESSAGE[] = 
-"simple-xcypher 1.0.0\n"
+"simple-xcipher 1.0.0\n"
 ;
 
 int main (int argc, char **argv){
@@ -383,7 +383,7 @@ int main (int argc, char **argv){
   size_t position;
   size_t size;
   bool givensize;
-  simple_xcypher_key key;
+  simple_xcipher_key key;
   bool showhelp;
   bool showversion;
   if (parse_args(argc, argv, &mode, &input, &output, &position, &size, &givensize, &key, &showhelp, &showversion)){
