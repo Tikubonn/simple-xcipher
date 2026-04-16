@@ -1,6 +1,6 @@
 
 export GCC=gcc
-export CFLAGS+=-I$(SIMPLE_XCYPHER_INCLUDE) -L$(SIMPLE_XCYPHER_LIB) -g
+export CFLAGS+=-I$(SIMPLE_XCYPHER_INCLUDE) -L$(SIMPLE_XCYPHER_LIB)
 
 .PHONY: all
 all: bin/test
